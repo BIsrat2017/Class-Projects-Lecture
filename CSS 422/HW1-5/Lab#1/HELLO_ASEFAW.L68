@@ -1,0 +1,51 @@
+00001000 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.16.01
+Created On: 10/18/2020 11:30:06 AM
+
+00000000                             1  *-----------------------------------------------------------
+00000000                             2  * Title      :
+00000000                             3  * Written by :
+00000000                             4  * Date       :
+00000000                             5  * Description:
+00000000                             6  *-----------------------------------------------------------
+00001000                             7      ORG    $1000
+00001000                             8  START:                  ; first instruction of program
+00001000                             9  
+00001000                            10  * Put program code here
+00001000                            11      
+00001000                            12      *MOVEA.W    $A000,A1
+00001000                            13     
+00001000  0642 1000                 14      ADD.W  #$1000, D2
+00001004                            15      
+00001004                            16      
+00001004  43F9 00001010             17      LEA         MESSAGE,A1
+0000100A  103C 000E                 18      MOVE.B      #14,D0
+0000100E  4E4F                      19      TRAP        #15
+00001010                            20      
+00001010                            21  
+00001010  =0000000D                 22  CR    EQU     $0D
+00001010  =0000000A                 23  LF    EQU     $0A
+00001010                            24  
+00001010= 48 65 6C 6C 6F 2C ...     25  MESSAGE DC.B    'Hello, my name is Bisrat,Asefaw',CR,LF
+00001031= 49 20 61 6D 20 73 ...     26          DC.B    'I am senior student in UWB.',CR,LF,'I study CSSE,hopping one day ',CR,LF
+0000106D= 49 20 61 6D 20 67 ...     27          DC.B    'I am going to be a programer or engineer.',CR,LF
+00001098= 49 20 61 6D 20 67 ...     28          DC.B    'I am graduating in June,2021',CR,LF,CR,LF
+000010B8= 54 68 61 6E 6B 20 ...     29          DC.B    'Thank you for listening',CR,LF,0
+000010D2                            30  
+000010D2                            31  
+000010D2                            32  
+000010D2                            33  * Put variables and constants here
+000010D2                            34  
+000010D2                            35      END    START        ; last line of source
+
+No errors detected
+No warnings generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+CR                  D
+LF                  A
+MESSAGE             1010
+START               1000

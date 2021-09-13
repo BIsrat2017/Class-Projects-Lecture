@@ -1,0 +1,169 @@
+00004000 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.16.01
+Created On: 10/27/2019 2:49:06 PM
+
+00000000                             1  *-----------------------------------------------------------
+00000000                             2  * Title      : Decode a floating point number
+00000000                             3  * Written by : Regie Pineda
+00000000                             4  * Date       : 10/22/2019
+00000000                             5  * Description: Given a 32-Bit Floating point Hexadecimal, 
+00000000                             6  *              display the sign, exponent, and mantissa.
+00000000                             7  *-----------------------------------------------------------
+00000000                             8  * Declares the SignBit, Exponent, and Mantissa 
+00000000  =00000580                  9  SignBit     EQU $580
+00000000  =00000582                 10  Exponent    EQU $582
+00000000  =00000584                 11  Mantissa    EQU $584
+00004000                            12      ORG    $4000 : Starts at address $4000
+00004000                            13  START:                  * first instruction of program
+00004000                            14  
+00004000                            15  *----------Put program code here----------
+00004000  43F9 00004102             16      LEA     PROMPTONE, A1   : Prompt the user for input
+00004006  103C 000E                 17      MOVE.B  #14, D0     : Loads TRAP code 14
+0000400A  4E4F                      18      TRAP    #15         : Hardware interrupt for I/O
+0000400C  103C 0002                 19      MOVE.B  #2, D0      : Loads TRAP code 2
+00004010  4E4F                      20      TRAP    #15         : Hardware interrupt for I/O
+00004012  2A7C 0000056A             21      MOVEA.L #$56A, A5   : Store start address in A5     
+00004018  143C 0009                 22      MOVE.B  #9, D2      : 9 is the number of chars that should be read
+0000401C                            23      
+0000401C                            24  * This subroutine is used when the value in D2 continues while 
+0000401C                            25  * D2 is greater than 0 and decrements D2 each time
+0000401C                            26  * Converts the input values for appropriate use. 
+0000401C                            27  CONVeRTINPUT   
+0000401C  1819                      28      MOVE.B  (A1)+,D4    : Copy the firt byte to D4 and increment
+0000401E  5302                      29      SUB.B   #1,D2       : Decrement the for loop subroutine
+00004020  B43C 0000                 30      CMP.B   #0,D2       : Checks if subroutine exists
+00004024  6700 0038                 31      BEQ     MOVEBITSHELPER  : If it is, branch to MOVEBITSHELPER  
+00004028  B83C 0040                 32      CMP.B   #$40,D4       : Otherwise, check if first byte of user input is a letter
+0000402C  6E00 000A                 33      BGT     CONVERTLETTER : If greater than '40', it may be letter
+00004030  B83C 003A                 34      CMP.B   #$3A,D4       : Otherwise, check if its a number since $3A
+00004034  6D00 0012                 35      BLT     CONVERTNUMBER : If it is smaller, then branch to CONVERTNUMBER
+00004038                            36  
+00004038                            37  * This is a subroutine for converting letters from ASCII    
+00004038                            38  CONVERTLETTER
+00004038  B83C 0046                 39      CMP.B   #$46,D4 : Make sure the byte stored in D4 is valid
+0000403C  6E00 001A                 40      BGT     ERRORHANDLE  : If it isnt, then branch to handle error
+00004040  0404 0037                 41      SUB.B   #$37,D4 : Subtract $37 from the Byte for conversion
+00004044  1AC4                      42      MOVE.B  D4,(A5)+   : Move it to A5 and increment A5
+00004046  60D4                      43      BRA CONVERTINPUT    : Branch to CONVERTINPUT   
+00004048                            44  
+00004048                            45  * This is a subroutine for converting numbersfrom ASCII 
+00004048                            46  CONVERTNUMBER
+00004048  B83C 0030                 47      CMP.B   #$30,D4   : Checks the read in byte    
+0000404C  6D00 000A                 48      BLT     ERRORHANDLE  : If its smaller, branch to error handling
+00004050  0404 0030                 49      SUB.B   #$30,D4    : Sub $30 from the val in D4
+00004054  1AC4                      50      MOVE.B  D4,(A5)+   : Move that value to A5 and increment it
+00004056  60C4                      51      BRA CONVERTINPUT   : Branch to CONVERTINPUT      
+00004058                            52  
+00004058                            53  * This is the Error handling subroutine that
+00004058                            54  * stores the address at A5 indirectly with 0's
+00004058                            55  ERRORHANDLE 
+00004058  1AFC 0000                 56      MOVE.B  #$00,(A5)+ : Stores $00 in A5 and increments it
+0000405C  60BE                      57      BRA CONVERTINPUT   : Branch to CONVERTINPUT     
+0000405E                            58  
+0000405E                            59  * This subroutine is used to prepare for MOVEBITSSUBROUTINE
+0000405E                            60  MOVEBITSHELPER
+0000405E  2A7C 0000056A             61      MOVEA.L #$56A,A5   : Reset the start address in A5
+00004064  143C 0005                 62      MOVE.B  #5,D2      : Store decimal val 5 in D2
+00004068                            63  
+00004068                            64  * This subroutine does logical shifts on values
+00004068                            65  * to make sure thatD4 register has correct HEX values
+00004068                            66  MOVEBITSSUBROUTINE 
+00004068  5302                      67      SUB.B   #1,D2   : Startby decrementing  
+0000406A  B43C 0000                 68      CMP.B   #0,D2  : Checks if its empty  
+0000406E  6700 000E                 69      BEQ     DERIVESIGNBIT   : If it is, bit movement is complete
+00004072  161D                      70      MOVE.B (A5)+,D3     : Otherwise, start to copy val from A5 to D3 and move to next
+00004074  E98B                      71      LSL.L   #4, D3   : Uses logical shift left by four bits
+00004076  D61D                      72      ADD.B  (A5)+,D3  : Add the next byte from A5 register
+00004078  E18C                      73      LSL.L   #8,D4    : Does long shift left on D4 
+0000407A  D803                      74      ADD.B   D3,D4    : Add the bits shifted copy from D3 to D4
+0000407C  60EA                      75      BRA MOVEBITSSUBROUTINE   : Branch to start again     
+0000407E                            76  
+0000407E                            77  * This is the subroutine for finding the SignBit 
+0000407E                            78  DERIVESIGNBIT
+0000407E  2604                      79      MOVE.L  D4,D3    : Move the hex val derived from user to D3    
+00004080  143C 001F                 80      MOVE.B  #31,D2   : Move '31' into D2     
+00004084  E4AB                      81      LSR.L   D2,D3    : Shift left
+00004086  11FC 002D 0580            82      MOVE.B  #$2D,SignBit   : Set default val as '-'
+0000408C  B63C 0001                 83      CMP.B   #$1,D3   : Checks after doing the logical shift   
+00004090  6700 0008                 84      BEQ     DERIVEEXPONENT   : If equal, branch to DERIVEEXPONENT  
+00004094  11FC 002B 0580            85      MOVE.B  #$2B,SignBit  : Otherwise, set the SignBit to '+' 
+0000409A                            86  
+0000409A                            87  * This subroutine is for calculating the exponent
+0000409A                            88  DERIVEEXPONENT
+0000409A  2604                      89      MOVE.L  D4,D3    : Move the hex val from user to D3   
+0000409C  0883 001F                 90      BCLR.L  #31,D3   : Clear most significant bit   
+000040A0  143C 0017                 91      MOVE.B  #23,D2   : Copy '23' into D2      
+000040A4  E4AB                      92      LSR.L   D2,D3    : Perform shift        
+000040A6  31C3 0582                 93      MOVE.W  D3,Exponent  : Move the derived val into Exponent
+000040AA                            94    
+000040AA                            95  * This is the subroutine for calculating the Mantissa
+000040AA                            96  DERIVEMANTISSA
+000040AA  2604                      97      MOVE.L  D4,D3   : Copy the hex val derived from user to D3   
+000040AC  143C 0009                 98      MOVE.B  #9,D2   : Copy '9' to D2      
+000040B0  E5AB                      99      LSL.L   D2,D3   : Shift the val by 9 bits left      
+000040B2  143C 001C                100      MOVE.B  #28,D2  : Copy '28' into D2
+000040B6  E4AB                     101      LSR.L   D2,D3   : Shift hex val by 28 bits      
+000040B8  31C3 0584                102      MOVE.W  D3,Mantissa    : Move the derived val into the var Manrissa
+000040BC                           103  * This is the printing subroutine
+000040BC                           104  PRINT
+000040BC  43F9 00004147            105      LEA     LabelSigBit,A1  : Print the SignBit var label
+000040C2  103C 000E                106      MOVE.B  #14,D0         
+000040C6  4E4F                     107      TRAP    #15               
+000040C8  1238 0580                108      MOVE.B  SignBit, D1     : Load the SignBit into D1  
+000040CC  103C 0006                109      MOVE.B  #6,D0            
+000040D0  4E4F                     110      TRAP    #15             
+000040D2                           111      
+000040D2  43F9 00004154            112      LEA     LabelExp,A1     : Print out the Exponent var label 
+000040D8  103C 000E                113      MOVE.B  #14,D0              
+000040DC  4E4F                     114      TRAP    #15          
+000040DE  3238 0582                115      MOVE.W  Exponent, D1    : Load the Exponent into D1
+000040E2  103C 0003                116      MOVE.B  #3,D0           : Display the val in D1 as decimal    
+000040E6  4E4F                     117      TRAP    #15             
+000040E8                           118      
+000040E8  43F9 00004161            119      LEA     LabelManti,A1   : Print out the Mantissa var label
+000040EE  103C 000E                120      MOVE.B  #14,D0         
+000040F2  4E4F                     121      TRAP    #15              
+000040F4  3238 0584                122      MOVE.W  Mantissa,D1     : Load Mantissa into D1  
+000040F8  103C 0003                123      MOVE.B  #3,D0           : Display val in D1 as decimal
+000040FC  4E4F                     124      TRAP    #15             
+000040FE                           125   
+000040FE  FFFF FFFF                126      SIMHALT             ; halt simulator
+00004102                           127  
+00004102  =0000000D                128  CR      EQU $0D    : ASCII Carriage Return         
+00004102  =0000000A                129  LF      EQU $0A    : ASCII Line Feed       
+00004102                           130  * Prompt the user
+00004102= 0D 50 6C 65 61 73 ...    131  PROMPTONE   DC.B CR,'Please enter a IEEE 32-bit floating point number in hexadecimal: ',CR,LF,0
+00004147                           132  * Print out variables
+00004147= 0D 0A 53 69 67 6E ...    133  LabelSigBit DC.B CR, LF,'Sign Bit: ',0
+00004154= 0D 0A 45 78 70 6F ...    134  LabelExp    DC.B CR, LF,'Exponent: ',0
+00004161= 0D 0A 4D 61 6E 74 ...    135  LabelManti  DC.B CR, LF,'Mantissa: ',0
+0000416E                           136  
+0000416E                           137      END    START        ; last line of source
+
+No errors detected
+No warnings generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+CONVERTINPUT        401C
+CONVERTLETTER       4038
+CONVERTNUMBER       4048
+CR                  D
+DERIVEEXPONENT      409A
+DERIVEMANTISSA      40AA
+DERIVESIGNBIT       407E
+ERRORHANDLE         4058
+EXPONENT            582
+LABELEXP            4154
+LABELMANTI          4161
+LABELSIGBIT         4147
+LF                  A
+MANTISSA            584
+MOVEBITSHELPER      405E
+MOVEBITSSUBROUTINE  4068
+PRINT               40BC
+PROMPTONE           4102
+SIGNBIT             580
+START               4000

@@ -1,0 +1,157 @@
+00001000 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.16.01
+Created On: 10/27/2020 11:54:45 AM
+
+00000000                             1  *-----------------------------------------------------------
+00000000                             2  * Title      : HOMEWORK_2 QUESTION 3
+00000000                             3  * Written by : BISRAT ASEFAW
+00000000                             4  * Date       : 11/22/2020
+00000000                             5  * Description: ADDR1,ADDSUM,CARRYBIT
+00000000                             6  *-----------------------------------------------------------
+00000000                             7  
+00000000                             8  
+00000000                             9  
+00000000                            10  Addr1       DS.L         10                    
+00000028                            11  Addsum      DS.W         10                 
+0000003C                            12  CarryBit    DS.B         10
+00000046  =0000A000                 13  TARGET      EQU          $A000
+00000046                            14  
+00000046                            15  
+00001000                            16      ORG    $1000
+00001000                            17  START:                  ; first instruction of program
+00001000                            18  
+00001000                            19  * Put program code here
+00001000                            20  
+00001000  43F9 000010E0             21      LEA     InMessage,A1
+00001006  103C 000E                 22      MOVE.B  #14,D0
+0000100A  4E4F                      23      TRAP    #15
+0000100C                            24      
+0000100C  103C 0004                 25      MOVE.B  #4,D0
+00001010  4E4F                      26      TRAP    #15
+00001012                            27      
+00001012                            28      *MOVE.B  #24,$6010  *TEST CASE 1
+00001012                            29      
+00001012  13C1 0000A000             30      MOVE.B   D1,$A000
+00001018                            31      *CLR.L    D1
+00001018                            32      
+00001018  1239 0000A000             33      MOVE.B   $A000,D1
+0000101E  247C 00006000             34      MOVEA.L  #$6000,A2
+00001024                            35      
+00001024  4242                      36      CLR      D2
+00001026  1439 0000A000             37      MOVE.B   TARGET,D2
+0000102C                            38      
+0000102C  B5FC 00008000             39  LOOP   CMPA.L       #$8000,A2
+00001032  6E00 000A                 40         BGT          NOTFOUND
+00001036  B41A                      41         CMP.B        (A2)+,D2
+00001038  6700 0014                 42         BEQ          FOUND
+0000103C                            43  
+0000103C  60EE                      44         BRA          LOOP
+0000103E                            45  
+0000103E  21FC 00006000 0000        46  NOTFOUND    MOVE.L  #$6000,Addr1
+00001046  2478 0000                 47              MOVE.L  Addr1,A2
+0000104A  6000 0010                 48              BRA     ADDALL
+0000104E                            49              
+0000104E                            50  
+0000104E  D5FC FFFFFFFF             51  FOUND    ADD.L     #-1,A2
+00001054  21CA 0000                 52           MOVE.L    A2,Addr1
+00001058  6000 0002                 53           BRA       ADDALL            
+0000105C                            54  
+0000105C                            55  
+0000105C  2A4A                      56  ADDALL   MOVEA.L   A2,A5
+0000105E  DBFC 00000200             57           ADDA.L    #512,A5      *MOVE.B    #0,CarryBit *FOR TESTING 
+00001064  4238 003C                 58           CLR.B     CarryBit     *MOVE.W    #0,Addsum    *FOR TESTING 
+00001068  4278 0028                 59           CLR.W     Addsum
+0000106C  4241                      60           CLR       D1
+0000106E  4245                      61           CLR       D5
+00001070                            62                                          *CLR   D2 FOR TESTING 
+00001070                            63           
+00001070  B5CD                      64  ADD     CMPA.L    A5,A2
+00001072  6C00 001E                 65          BGE       DONE
+00001076                            66                                          *ADD       #1,D2 *FOR TESTING 
+00001076  121A                      67          MOVE.B    (A2)+,D1
+00001078  D378 0028                 68          ADD.W     D1,Addsum
+0000107C  6500 0004                 69          BCS       CARRYDETECTED
+00001080                            70          
+00001080  60EE                      71          BRA       ADD
+00001082                            72          
+00001082  0C38 0000 003C            73  CARRYDETECTED   CMP.B       #0,CarryBit
+00001088  66E6                      74                  BNE         ADD             *LOOPS BACK IF THE CARRY BIT IS ALREADY SET 
+0000108A  11FC 0001 003C            75                  MOVE.B      #1,CarryBit
+00001090  60DE                      76                  BRA         ADD
+00001092                            77                  
+00001092                            78                  
+00001092  43F9 000010F3             79  DONE    LEA     ADDRESSPRINT,A1
+00001098  103C 000E                 80          MOVE.B  #14,D0
+0000109C  4E4F                      81          TRAP    #15
+0000109E                            82          
+0000109E  4241                      83          CLR     D1
+000010A0                            84          
+000010A0  2238 0000                 85          MOVE.L  Addr1,D1
+000010A4  103C 0003                 86          MOVE.B  #3,D0
+000010A8  4E4F                      87          TRAP    #15
+000010AA                            88          
+000010AA  4241                      89          CLR     D1
+000010AC                            90          
+000010AC  43F9 000010FD             91          LEA     ADD_SUM,A1
+000010B2  103C 000E                 92          MOVE.B  #14,D0
+000010B6  4E4F                      93          TRAP    #15
+000010B8                            94          
+000010B8                            95                                  *MOVE.W  D5,Addsum  TESTING 
+000010B8                            96          
+000010B8  4241                      97          CLR.W   D1
+000010BA  3238 0028                 98          MOVE.W  Addsum,D1
+000010BE  103C 0003                 99          MOVE.B  #3,D0
+000010C2  4E4F                     100          TRAP    #15
+000010C4                           101          
+000010C4                           102          
+000010C4  43F9 00001108            103          LEA     Carr_yBit,A1
+000010CA  103C 000E                104          MOVE.B  #14,D0
+000010CE  4E4F                     105          TRAP    #15
+000010D0                           106  
+000010D0  4281                     107          CLR.L   D1
+000010D2  1238 003C                108          MOVE.B  (CarryBit),D1
+000010D6  303C 0003                109          MOVE    #3,D0
+000010DA  4E4F                     110          TRAP    #15
+000010DC                           111  
+000010DC                           112  
+000010DC                           113  
+000010DC                           114           
+000010DC                           115  
+000010DC  FFFF FFFF                116      SIMHALT             ; halt simulator
+000010E0                           117  
+000010E0                           118  * Put variables and constants here
+000010E0                           119  
+000010E0  =0000000D                120  CR          EQU             $0D                   
+000010E0  =0000000A                121  LF          EQU             $0A                 
+000010E0                           122  
+000010E0= 49 4E 54 45 52 20 ...    123  InMessage       DC.B    'INTER A HEX BYTE :',0
+000010F3= 0D 0A 41 64 64 72 ...    124  ADDRESSPRINT    DC.B    CR,LF,'Addr1 :',0
+000010FD= 0D 0A 41 64 64 73 ...    125  ADD_SUM         DC.B    CR,LF,'Addsum :',0
+00001108= 0D 0A 43 61 72 72 ...    126  Carr_yBit       DC.B    CR,LF,'CarryBit :',0
+00001115                           127      END    START        ; last line of source
+
+No errors detected
+No warnings generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+ADD                 1070
+ADDALL              105C
+ADDR1               0
+ADDRESSPRINT        10F3
+ADDSUM              28
+ADD_SUM             10FD
+CARRYBIT            3C
+CARRYDETECTED       1082
+CARR_YBIT           1108
+CR                  D
+DONE                1092
+FOUND               104E
+INMESSAGE           10E0
+LF                  A
+LOOP                102C
+NOTFOUND            103E
+START               1000
+TARGET              A000

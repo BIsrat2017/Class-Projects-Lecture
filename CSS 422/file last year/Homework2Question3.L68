@@ -1,0 +1,326 @@
+00001000 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.16.01
+Created On: 10/22/2020 12:50:32 AM
+
+00000000                             1  *-----------------------------------------------------------
+00000000                             2  * Title      : Homework 2 Question 3
+00000000                             3  * Written by : Ahmed Osman
+00000000                             4  * Date       : 10/19/2020
+00000000                             5  
+00000000                             6  *-----------------------------------------------------------
+00000000                             7  
+00000000                             8  * Description: Write a program in 68K assembly code that 
+00000000                             9  * satisfies the following specifications:
+00000000                            10  * 1- Your program should start at the memory location 
+00000000                            11  * $1000 (hint: use the ORG directive).
+00000000                            12  
+00000000                            13  * 2- Take a one byte hexadecimal value from user input 
+00000000                            14  * and save the value at address $A000 (hint: you can 
+00000000                            15  * consider this input a target value). You should not 
+00000000                            16  * hardcode the inputs. You may ignore sanity check on corner 
+00000000                            17  * cases, but assume user inputs are always in an expected format.
+00000000                            18  
+00000000                            19  * 3- Read each byte data stored in memory between the addresses 
+00000000                            20  * $6000 and $8000 and compare it to the (byte) data at address 
+00000000                            21  * $A000 (hint: you can consider the memory between $6000 and 
+00000000                            22  * $8000 an array).
+00000000                            23  
+00000000                            24  * 4- Please define a LONGWORD variable called address Addr1. 
+00000000                            25  * In the specified memory range, if the data at address $A000
+00000000                            26  * is found, the longword address of the data in memory is saved
+00000000                            27  * into variable Addr1. If it fails to find the data within the 
+00000000                            28  * specified memory range ($6000 and $8000), then put Addr1 = $6000, 
+00000000                            29  * which is similar to the idea of "error code" or "invalid index" 
+00000000                            30  * in your C++ code.
+00000000                            31  
+00000000                            32  * 5- Please define a WORD variable called address Addsum. Add a 
+00000000                            33  * series of bytes stored in the 512 consecutive memory locations 
+00000000                            34  * beginning at address Addr1, no matter you find the target data 
+00000000                            35  * or not. Save the sum value into Addsum.
+00000000                            36  
+00000000                            37  * 6- There is a chance that the sum might exceed $FFFF, 
+00000000                            38  * (exceeding the range of word value), so you will also need to 
+00000000                            39  * store the carry bit if an overflow occurs. Store the carry bit 
+00000000                            40  * as a BYTE variable called CarryBit.
+00000000                            41  
+00000000                            42  * 7- Print the Addr1, Addsum and CarryBit in the output window.
+00000000                            43  
+00000000                            44  *---------------------------------------------------------------------
+00000000                            45  
+00000000  =0000000D                 46  CR          EQU             $0D                   * CARRIAGE RETURN
+00000000  =0000000A                 47  LF          EQU             $0A                   * LINE FEED FOR ASCII
+00000000= 0D 0A 00                  48  PROPER_LINE DC.B            CR,LF,0               * FORMATING LINE
+00000003                            49  
+00000004                            50  Addr1       DS.L            1                     * DECLARE Add1 AS A LONGWORD SIZE VALUE
+00000008                            51  Addsum      DS.W            1                     * DECLARE Addsum AS A WORD SIZE VALUE
+0000000A                            52  CarryBit    DS.B            1                     * DECLARE CarryBit AS A BYTE SIZE VALUE
+0000000B                            53  
+0000000B                            54  
+0000000B                            55  
+00001000                            56      ORG    $1000
+00001000                            57  START:     
+00001000                            58  
+00001000                            59  *------------------------ASK/TEST INPUT----------------------------------
+00001000                            60               
+00001000  43F9 000011AE             61              LEA             USER_PROMPT,A1       * TO PROMPT USER FOR INPUT
+00001006  103C 000E                 62              MOVE.B          #14,D0               * TO DISPLAY USER'S PROMPT
+0000100A  4E4F                      63              TRAP            #15                  * TO READ STRING FROM USER INPUT
+0000100C  103C 0002                 64              MOVE.B          #2,D0                * TO ALLOW INPUT OUTPUT OPERATIONS
+00001010  4E4F                      65              TRAP            #15                  * TO READ STRING FROM USER
+00001012                            66    
+00001012  4240                      67              CLR             D0                   * GET D0 DATA REGISTER CLEAR
+00001014                            68              
+00001014  4EB9 000010F2             69              JSR             CONVERT_TO_HEX       * JUMP TO SUBTOUTINE  TO CONVERT_TO_HEX
+0000101A  247C 00006000             70              MOVEA.L         #$6000,A2            * START SEARCHING FROM ADDRESS $6000
+00001020  1239 0000A000             71              MOVE.B          ($A000),D1           * COPY CONTENT OF $A000 TO D1 
+00001026                            72               
+00001026                            73  *-----------------------------LOOP----------------------------------------    
+00001026                            74          
+00001026  B5FC 00008000             75  LOOP        CMPA.L          #$8000,A2            * COMPARE ADDRESS REGISTER $8000 WITH A2
+0000102C  6E00 000A                 76              BGT             NOT_FOUND_VALUE      * IF IT IS GREATER THEN GO TO NOT_FOUND_VALUE
+00001030  B21A                      77              CMP.B           (A2)+,D1             * TO COMPARE THE CONTENT OF A2 WITH D1
+00001032  6700 0012                 78              BEQ             FOUND_VALUE          * IF IT'S EQUAL THEN IT'S FOUND THEN GO TO
+00001036                            79                                                   * VALUE_FOUND SUBROUTINE
+00001036  60EE                      80              BRA             LOOP                 * IF NOT EQUAL THEN GO BACK TO THE LOOP
+00001038                            81              
+00001038                            82  *-------------------------NOT_FOUND_VALUE------------------------------------
+00001038                            83  NOT_FOUND_VALUE
+00001038  247C 00006000             84              MOVEA.L         #$6000,A2            * SET ADDRESS REGISTER $6000 TO A2 IF THE 
+0000103E                            85                                                   * VALUE WASN'T FOUND
+0000103E  21CA 0004                 86              MOVE.L          A2,Addr1             * COPY THE THE CONTENT OF A2 TO Addr1
+00001042  6000 0010                 87              BRA             ADD                  * BRANCH TO ADD_SUBROUTINE   
+00001046                            88           
+00001046                            89  *-------------------------FOUND_VALUE---------------------------------------  
+00001046                            90           
+00001046                            91  FOUND_VALUE   
+00001046  D5FC FFFFFFFF             92              ADDA.L          #-1,A2               * STEP BACK ONE ADDRESS 
+0000104C  21CA 0004                 93              MOVE.L          A2, Addr1            * STORE A2 TO Addr1  
+00001050  6000 0002                 94              BRA             ADD                  * BRANCH TO ADD SUBROUTINE
+00001054                            95              
+00001054                            96  *------------------------------ADD-----------------------------------------
+00001054                            97  
+00001054                            98  ADD            
+00001054  264A                      99              MOVEA.L         A2,A3                * STORE A2 ADDRESS TO A3
+00001056  D7FC 00000200            100              ADDA.L          #512,A3              * INCREMENT THE ADDRESS A3 BY 512
+0000105C  31FC 0000 0008           101              MOVE.W          #0,Addsum            * COPY 0 AS THE CONTENT TO Addsum
+00001062  11FC 0000 000A           102              MOVE.B          #0,CarryBit          * COPY 0 AS THE CONTENT TO CarryBit
+00001068  4242                     103              CLR             D2                   * CLEAR THE CONTENT OF D2
+0000106A                           104               
+0000106A                           105  *-------------------------MAIN_ADD_SUBROUTINE ---------------------------
+0000106A                           106  
+0000106A                           107  MAIN_ADD_SUBROUTINE           
+0000106A  B5CB                     108              CMPA.L          A3,A2                * COMPARRE THE CURRENT ADDRESS TO A2
+0000106C  6C00 0016                109              BGE             PRINT                * IF GREATER OR EQ THEN EXECUTE PRINT
+00001070  141A                     110              MOVE.B          (A2)+,D2             * COPY THE CONTENT OF A2 ADDRESS TO D2
+00001072  D578 0008                111              ADD.W           D2,Addsum            * ADD THE CONTENT OF D0 DATA REGISTER TO Addsum
+00001076  6500 0004                112              BCS             SET_CARRY_FLAG       * IF THE CARY VALUE IS SET BRANCH TO 
+0000107A                           113                                                   * SET_CARRY_FLAG SUBROUTINE
+0000107A  60EE                     114              BRA             MAIN_ADD_SUBROUTINE  * IF THE CARRY VALUE IS NOT SEET, THEN RESTART THE LOOP
+0000107C                           115              
+0000107C                           116  
+0000107C                           117  *---------------------------SET_CARRY_FLAG-----------------------------------
+0000107C                           118  
+0000107C                           119  SET_CARRY_FLAG
+0000107C  11FC 0001 000A           120              MOVE.B          #1, CarryBit         * COPY 1 TO Carrybit AS A DEFAULT VALUE
+00001082  60E6                     121              BRA             MAIN_ADD_SUBROUTINE  * BRANCHES BACK TO RULING ADD_SUBROUTINE
+00001084                           122  
+00001084                           123  *-------------------------------PRINT---------------------------------------      
+00001084                           124  
+00001084                           125  PRINT             
+00001084  43F8 0000                126              LEA             PROPER_LINE, A1      * Change format for A1   
+00001088  103C 000E                127              MOVE.B          #14,D0               * TO DISPLAY 
+0000108C  4E4F                     128              TRAP            #15                  * TO PRINT OUTPUT
+0000108E  43F9 000011E1            129              LEA             STR, A1              * LOAD STR AS AN EA
+00001094  103C 000E                130              MOVE.B          #14,D0               * TO DISPLAY
+00001098  4E4F                     131              TRAP            #15                  * TO PRINT OUTPUT
+0000109A                           132                 
+0000109A  43F8 0004                133              LEA             Addr1, A1            * LOAD Addr1 INTO A1 AS AN EA
+0000109E  1A3C 0004                134              MOVE.B          #4, D5               * COPY 4 INTO D5
+000010A2  4EB9 00001142            135              JSR             HEX_PRINT            * JUMPT SUBROUTINE TO HEX_PRINT SUBROUTINE
+000010A8                           136              
+000010A8  43F8 0000                137              LEA             PROPER_LINE, A1     
+000010AC  103C 000E                138              MOVE.B          #14,D0               * TO DISPLAY
+000010B0  4E4F                     139              TRAP            #15                  * TO PRINT OUT            
+000010B2  43F9 000011ED            140              LEA             STR_SUM, A1          * LOAD STR_SUM IN A1 AS AN EA
+000010B8  103C 000E                141              MOVE.B          #14,D0               * TO DISPLAY
+000010BC  4E4F                     142              TRAP            #15                  * TO PRINT OUT
+000010BE                           143               
+000010BE  43F8 0008                144              LEA             Addsum, A1           * LOAD Addsum INTO A1
+000010C2  1A3C 0002                145              MOVE.B          #2, D5               * COPY 2 INTO D5
+000010C6  4EB9 00001142            146              JSR             HEX_PRINT            * JUMP TO SUBROUTINE HEX_PRINT
+000010CC                           147              
+000010CC  43F8 0000                148              LEA             PROPER_LINE,A1      
+000010D0  103C 000E                149              MOVE.B          #14,D0               * TO DISPLAY 
+000010D4  4E4F                     150              TRAP            #15                  * TO PRINT OUT
+000010D6                           151             
+000010D6  43F9 000011F9            152              LEA             STR_BIT,A1           * LOAD STR_BIT INTO A1
+000010DC  103C 000E                153              MOVE.B          #14,D0               * TO DISPLAY    
+000010E0  4E4F                     154              TRAP            #15                  * TO PRINT OUT
+000010E2                           155         
+000010E2  1238 000A                156              MOVE.B          CarryBit, D1         * COPY THE VALUE OF Carrybit INTO D1
+000010E6  43F9 000011AE            157              LEA             USER_PROMPT, A1      * LOAD USER_PROMPT INTO ADDRESS REGISTER A1 AS AN EA
+000010EC  103C 0003                158              MOVE.B          #3,D0                * COPY 3 INTO D0
+000010F0  4E4F                     159              TRAP            #15                  * TO DISPLAY
+000010F2                           160              
+000010F2                           161  *------------------------CONVERT_TO_HEX ----------------------------------
+000010F2                           162  
+000010F2                           163  CONVERT_TO_HEX            
+000010F2  267C 0000A000            164              MOVEA.L         #$A000,A3            * MOVE $A000 INTO A3 AS AN DEFUALT ADDRESS REGISTER
+000010F8  1611                     165              MOVE.B          (A1),D3              * STORE THE CONTENT OF A1 INTO D3 DATA REGISTER
+000010FA  B63C 0000                166              CMP.B           #0,D3                * COMPARE IF THE STRING REACHED NULL (THE END)
+000010FE  6700 0016                167              BEQ             SKIP_BRANCH          * RETURN TO SUB
+00001102  1819                     168              MOVE.B          (A1)+,D4             * IF IT DID NOT REACH THE END, KEEP ON STRING
+00001104                           169                                                   * THE CONTENT OF A1 INTO D4
+00001104  E80B                     170              LSR.B           #4, D3               * PERFOR LOGICAL SHIFT RIGHT BY 4 BITS ON 
+00001106                           171                                                   * BYTE LEVEL AND STORE THE RESULTS TO D3
+00001106                           172                                                  
+00001106  E90C                     173              LSL.B           #4, D4               * PERFOR LOGICAL SHIFT LEFT ON BYTE LEVEL AND 
+00001108                           174                                                   * STORE THE RESULTS INTO D4
+00001108  E80C                     175              LSR.B           #4, D4               * PERFORM LSR SAME AS ABOVE
+0000110A  B63C 0003                176              CMP.B           #3,D3                * PERFORM COMPARISON
+0000110E  6700 0008                177              BEQ             CONVERT_TO_NUM       * BRANCHTO CONVERT_TO_NUM IF EQUAL
+00001112  6000 0012                178              BRA             CONVERT_TO_LTR       * OTHERWISE BRANCH TO CONVERT_TO_LTR
+00001116                           179              
+00001116                           180  *-------------------------SKIP_BRANCH -------------------------------------
+00001116                           181                      
+00001116                           182  SKIP_BRANCH                                      * TO RETURN TO SUBROUTINE
+00001116  4E75                     183              RTS                                                        
+00001118                           184  
+00001118                           185  *------------------------CONVERT_TO_NUM -----------------------------------
+00001118                           186  
+00001118                           187  CONVERT_TO_NUM           
+00001118  B03C 0000                188              CMP.B           #0,D0                * COMPARE D0 WITH 0 THAT EMPLIES BEING EMPTY
+0000111C  6700 001A                189              BEQ             SHIFTING             * BRANCH TO SHIFTING IF EQUAL
+00001120  4240                     190              CLR             D0                   * ERASE THE CONTENT OF D0
+00001122  D91B                     191              ADD.B           D4,(A3)+             * ADD D4 CONTENT INTO A3 CONTENT AND POST INCREMENT IT
+00001124  60CC                     192              BRA             CONVERT_TO_HEX       * EXECUTE CONVERT_TOHEXT SUBROUTINE 
+00001126                           193  
+00001126                           194  *------------------------CONVERT_TO_LTR ----------------------------------            
+00001126                           195  
+00001126                           196  CONVERT_TO_LTR                
+00001126  0604 0009                197              ADD.B           #9, D4               * ADD 9 INTO CONTENT OF D4 DATA REGISTER
+0000112A  B03C 0000                198              CMP.B           #0, D0               * COMPARE TO D0 WITH 0 THAT EMPLIES BEING EMPTY
+0000112E  6700 0008                199              BEQ             SHIFTING             * BRANCH TO SHIFTING IF EQUAL
+00001132  4240                     200              CLR             D0                   * ERASE TJE CONTENT OF D0
+00001134  D91B                     201              ADD.B           D4, (A3)+            * ADD D4 CONTENT INTO A3 CONTENT AND POST INCREMENT IT
+00001136  60BA                     202              BRA             CONVERT_TO_HEX :     * BRANCH TO CONVERT_TO_HEX
+00001138                           203  
+00001138                           204  *---------------------------SHIFTING -------------------------------------
+00001138                           205  
+00001138                           206  SHIFTING            
+00001138  E90C                     207              LSL.B           #4, D4               * PERFORM LOGICAL 4 BITS SHIFT TO THE LEFT IN BYTE LEVEL 
+0000113A  1684                     208              MOVE.B          D4, (A3)             * COPY THE CONTENT OF D4 DATA REGISTER INTO A3
+0000113C  103C 0001                209              MOVE.B          #1, D0               * COPY 1 TO D0 AS AN EA
+00001140  60B0                     210              BRA             CONVERT_TO_HEX :     * BRANCH TO CONVERT_TO_HEX
+00001142                           211              
+00001142                           212  *---------------------------HEX_PRINT ------------------------------------
+00001142                           213  
+00001142                           214  HEX_PRINT            
+00001142  BA3C 0000                215              CMP.B           #0, D5               * COMPARE D4 WITH 0 THAT EMPLIES BEING EMPTY
+00001146  6700 002A                216              BEQ             SKIP_HEX_PRINT       * IF EQUAL BRANCH TO SKIP_HEX_PRINT
+0000114A  1611                     217              MOVE.B          (A1),D3              * COPY A1 CONTENT INTO D3
+0000114C  1819                     218              MOVE.B          (A1)+,D4             * COPY A1 CONTENT INTO D4 AND ICREMENT IT
+0000114E                           219              
+0000114E  E80B                     220              LSR.B           #4, D3               * PERFORM LOGICAL SHIFT RIGHT ON BYTE LEVEL AND 
+00001150                           221                                                   * STORE THE RESULTS INTO D3
+00001150                           222             
+00001150  E90C                     223              LSL.B           #4, D4               * PERFORM LOGICAL SHIFT LEFT ON BYTE LEVEL AND 
+00001152                           224                                                   * STORE THE RESULTS INTO D4
+00001152                           225  
+00001152  E80C                     226              LSR.B           #4, D4               * PERFORM LOGICAL SHIFT LEFT ON BYTE LEVEL AND 
+00001154                           227                                                   * STORE THE RESULTS INTO D4
+00001154                           228              
+00001154  4246                     229              CLR             D6                   * CLEAR THE CONTENT OF D6 DATA REGISTER
+00001156  1203                     230              MOVE.B          D3,D1                * COPY THE CONTENT OF D3 INTO D1 DATA REGISTER
+00001158  B63C 000A                231              CMP.B           #10,D3               * PERFORM COMPARISON BETWEEN 10 AND D3 CONTENT
+0000115C  6D00 0016                232              BLT             PRINT_NUM            * BRANCH PRINT_NUM SUBROUTINE IF IT IS LESS
+00001160  6000 0028                233              BRA             PRINT_LTR            * OTHERWISE BRANCH PRINT_LTR SUBROUTINE
+00001164                           234  PRINT_SEC                   
+00001164  1204                     235              MOVE.B          D4,D1
+00001166  B83C 000A                236              CMP.B           #10,D4
+0000116A  6D00 0008                237              BLT             PRINT_NUM
+0000116E  6000 001A                238              BRA             PRINT_LTR
+00001172                           239                   
+00001172                           240  *---------------------------SKIP_HEX_PRINT ------------------------------              
+00001172                           241                   
+00001172                           242  SKIP_HEX_PRINT
+00001172  4E75                     243              RTS                                  * TO BRANCH BACK
+00001174                           244              
+00001174                           245  *-----------------------------PRINT_NUM ---------------------------------
+00001174                           246  
+00001174                           247  PRINT_NUM                                        * SUBROUTINE TO PRINT NUMBER
+00001174  0601 0030                248              ADD.B           #$30, D1             * COPY $30 AS AN IMEDIATE VAL INTO D1
+00001178  103C 0006                249              MOVE.B          #6, D0               * COPY 6 INTO D0 AS AN EA
+0000117C  4E4F                     250              TRAP            #15                  * TO DISPLAY NUM
+0000117E  BC3C 0000                251              CMP.B           #0, D6 :             * COMPARE D6 CONTENT WITH 0 IF EQUAL
+00001182  6700 0020                252              BEQ             SWAP                 * BRANCH TO SWAP SUBROUTINE
+00001186  5305                     253              SUB.B           #1, D5               * IF NOT EQUAL SUBTRACT 1 FROM THE CONTENT OF D5
+00001188  60B8                     254              BRA             HEX_PRINT            * AND BRANCH INTO HEX_PRINT SUBROUTINE
+0000118A                           255              
+0000118A                           256  *-----------------------------PRINT_LTR ---------------------------------
+0000118A                           257  
+0000118A                           258  PRINT_LTR                                       * SUBROUTINE TO PRINT LETTER
+0000118A  0401 0009                259              SUB.B           #9, D1              * SUBTRACT 9 FROM D1 CONTENT 
+0000118E  0601 0040                260              ADD.B           #$40, D1            * ADD 40 INTO CONTENT OF D1 DATA REGISTER
+00001192  103C 0006                261              MOVE.B          #6, D0              * COPY 6 INTO D0 DATA REGISTER
+00001196  4E4F                     262              TRAP            #15                 * TO DISPLAY OUTPUT
+00001198                           263              
+00001198  BC3C 0000                264              CMP.B           #0, D6              * COMPARE D6 CONTENT WITH 0
+0000119C  6700 0006                265              BEQ             SWAP                * IF EQUAL BRANCH SWAP
+000011A0                           266              
+000011A0  5305                     267              SUB.B           #1, D5              * SUBTRACT 1 FROM THE CONTENT OF D5 DATA REGISTER
+000011A2  609E                     268              BRA             HEX_PRINT           * BRANCH TO HEX_PRINT
+000011A4                           269              
+000011A4                           270  *-------------------------------SWAP-------------------------------------
+000011A4                           271              
+000011A4                           272  SWAP                                            * SUBROUTINE HELPER FOR PRINT_LTR SUBROUTINE
+000011A4  1C3C 0001                273              MOVE.B #1, D6
+000011A8  60BA                     274              BRA PRINT_SEC
+000011AA                           275  
+000011AA  FFFF FFFF                276              SIMHALT                             * halt simulator
+000011AE                           277              
+000011AE                           278  *------------------------DECLARING CONSTANTS-----------------------------
+000011AE                           279  
+000011AE= 45 4E 54 45 52 20 ...    280  USER_PROMPT DC.B    'ENTER ONE BYE HEXADECIMAL VALUE IN CAPITAL LETERS:',0
+000011E1= 41 64 64 72 31 3A ...    281  STR         DC.B    'Addr1:     ',0
+000011ED= 41 64 64 73 75 6D ...    282  STR_SUM     DC.B    'Addsum:    ',0
+000011F9= 43 61 72 72 79 42 ...    283  STR_BIT     DC.B    'CarryBit:  ',0
+00001205                           284  
+00001205                           285      END    START        : Last line of source code.
+
+No errors detected
+No warnings generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+ADD                 1054
+ADDR1               4
+ADDSUM              8
+CARRYBIT            A
+CONVERT_TO_HEX      10F2
+CONVERT_TO_LTR      1126
+CONVERT_TO_NUM      1118
+CR                  D
+FOUND_VALUE         1046
+HEX_PRINT           1142
+LF                  A
+LOOP                1026
+MAIN_ADD_SUBROUTINE  106A
+NOT_FOUND_VALUE     1038
+PRINT               1084
+PRINT_LTR           118A
+PRINT_NUM           1174
+PRINT_SEC           1164
+PROPER_LINE         0
+SET_CARRY_FLAG      107C
+SHIFTING            1138
+SKIP_BRANCH         1116
+SKIP_HEX_PRINT      1172
+START               1000
+STR                 11E1
+STR_BIT             11F9
+STR_SUM             11ED
+SWAP                11A4
+USER_PROMPT         11AE

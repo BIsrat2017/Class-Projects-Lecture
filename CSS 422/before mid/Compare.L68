@@ -1,0 +1,52 @@
+00000400 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.16.01
+Created On: 10/24/2020 9:51:11 PM
+
+00000000                             1  *-----------------------------------------------------------
+00000000                             2  * Title      :
+00000000                             3  * Written by :
+00000000                             4  * Date       :
+00000000                             5  * Description:
+00000000                             6  *-----------------------------------------------------------
+00001000                             7      ORG    $1000
+00001000                             8  START:                  ; first instruction of program
+00001000                             9  
+00001000                            10  * Put program code here
+00001000  1039 00001042             11  START        MOVE.B DATA,D0
+00001006  1239 00001044             12               MOVE.B  DATA+2,D1
+0000100C  B001                      13               CMP.B  D1,D0
+0000100E  6C00 0004                 14               BGE    NEXT1
+00001012  1001                      15               MOVE.B D1,D0
+00001014                            16  
+00001014  1239 00001044             17  NEXT1       MOVE.B DATA+2,D1
+0000101A  B001                      18              CMP.B  D1,D0
+0000101C  6C00 0004                 19              BGE    NEXT2
+00001020  1001                      20              MOVE.B D1,D0
+00001022                            21  
+00001022  1239 00001044             22  NEXT2       MOVE.B DATA+2,D1
+00001028  B001                      23              CMP.B  D1,D0
+0000102A  6C00 000C                 24              BGE    NEXT3
+0000102E  13C1 00001046             25              MOVE.B D1,MAX_NUM
+00001034  6000 0008                 26              BRA  DONE
+00001038                            27  
+00001038  13C0 00001046             28  NEXT3       MOVE.B  D0,MAX_NUM
+0000103E  4E72 2700                 29  DONE        STOP    #$2700
+00001042                            30  
+00001042= 05 4C 42 7F               31  DATA        DC.B    $05,$4C,$42,$7F
+00001046                            32  MAX_NUM     DS.B    1
+00001047                            33              END     $400
+
+No errors detected
+No warnings generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+DATA                1042
+DONE                103E
+MAX_NUM             1046
+NEXT1               1014
+NEXT2               1022
+NEXT3               1038
+START               1000

@@ -1,0 +1,81 @@
+00001000 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.16.01
+Created On: 10/24/2020 10:43:38 PM
+
+00000000                             1  *-----------------------------------------------------------
+00000000                             2  * Title      :  HW1Q#5
+00000000                             3  * Written by :Bisrat Asefaw
+00000000                             4  * Date       : 10/18/2020
+00000000                             5  * Description: program for adding two numbers 
+00000000                             6  *-----------------------------------------------------------
+00000000  =0000000D                  7  CR      EQU     $0D
+00000000  =0000000A                  8  LF      EQU     $0A
+00000000                             9  
+00001000                            10      ORG    $1000
+00001000                            11  START:                  ; first instruction of program
+00001000                            12  
+00001000                            13  * Put program code here
+00001000  163C 0001                 14         MOVE.B  #1,D3        * usign D3 to make two loop for storing two data 
+00001004                            15         
+00001004  43F9 00001054             16  LOOP   LEA     MESSAGE,A1   *loading a message to A1  
+0000100A  303C 000E                 17         MOVE.W  #14,D0       * trap tast 14 for displaying 
+0000100E  4E4F                      18         TRAP    #15
+00001010                            19         
+00001010  3401                      20         MOVE.W  D1,D2        * moving data in D1 to D2
+00001012  303C 0004                 21         MOVE.W  #4,D0        * asking usr to inter a number 
+00001016  4E4F                      22         TRAP    #15
+00001018                            23         
+00001018                            24         
+00001018  B67C 0002                 25         CMP.W   #2,D3        * comparing if the loop makes two times 
+0000101C  6700 0006                 26         BEQ     DONE         * branch if its two times 
+00001020                            27      
+00001020  5243                      28         ADD.W   #1,D3        * add one to D3 for counting the loop
+00001022                            29         
+00001022  60E0                      30         BRA     LOOP         * branch to loop
+00001024                            31         
+00001024                            32  
+00001024  D242                      33  DONE   ADD.W   D2,D1        * add the two numbers 
+00001026  691A                      34         BVS.S   INVal        * if overflow flag is set branch 
+00001028  31C1 6000                 35         MOVE.W  D1,$6000     * move the sum to address $6000 
+0000102C                            36  
+0000102C                            37         
+0000102C  43F9 00001066             38         LEA     MESSAGES,A1     * display the message the sum is 
+00001032  303C 000E                 39         MOVE.W  #14,D0
+00001036  4E4F                      40         TRAP    #15
+00001038                            41        
+00001038                            42         
+00001038  303C 0003                 43         MOVE.W  #3,D0           *display the sum
+0000103C  4E4F                      44         TRAP    #15             *end  the  program
+0000103E                            45         
+0000103E  FFFF FFFF                 46         SIMHALT
+00001042                            47  
+00001042                            48         
+00001042  43F9 00001073             49  INVal    LEA     INV,A1         * display an invalid message 
+00001048  303C 000E                 50           MOVE.W  #14,D0
+0000104C  4E4F                      51           TRAP    #15
+0000104E                            52              
+0000104E  303C 0009                 53           MOVE.W  #9,D0          *end the program
+00001052  4E4F                      54           TRAP    #15
+00001054                            55           
+00001054                            56  * Put variables and constants here
+00001054= 45 4E 54 45 52 20 ...     57  MESSAGE DC.B    'ENTER A NUMBER : ',0
+00001066= 54 48 45 20 53 55 ...     58  MESSAGES DC.B    'THE SUM IS: ',0
+00001073= 20 0D 0A 57 41 52 ...     59  INV      DC.B     ' ',CR,LF,'WARNING, OVERFLOW !! ',0
+0000108C                            60      END    START        ; last line of source
+
+No errors detected
+No warnings generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+CR                  D
+DONE                1024
+INV                 1073
+INVAL               1042
+LF                  A
+LOOP                1004
+MESSAGE             1054
+MESSAGES            1066
+START               1000

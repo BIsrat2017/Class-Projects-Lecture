@@ -1,0 +1,166 @@
+00004000 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.16.01
+Created On: 11/7/2020 12:00:41 PM
+
+00000000                             1  *-----------------------------------------------------------
+00000000                             2  * Title      :  CHANGE FROM IEEE-32 TO SIGN, EXPONENT,MANTISA
+00000000                             3  * Written by :  BISRAT ASEFAW
+00000000                             4  * Date       :  10/23/2020
+00000000                             5  * Description:  PROGRAM TO CHANGE FROM HEX-IEEE TO SIGN, EXPONENT,MANTISA
+00000000                             6  *-----------------------------------------------------------
+00000000                             7  
+00000000                             8  
+00000000  =00005000                  9  USERINPUT       EQU     $5000
+00000000  =00005010                 10  USERINPUTDATA   EQU     $5010
+00000000  =00005020                 11  UERINPUTINHEX   EQU     $5020
+00000000                            12  
+00004000                            13      ORG    $4000
+00004000                            14  START:                  ; first instruction of program
+00004000                            15  
+00004000                            16  * Put program code here
+00004000                            17  
+00004000  43F9 000040C6             18      LEA     MESSAGE,A1
+00004006  700E                      19      MOVE.L  #14,D0
+00004008  4E4F                      20      TRAP    #15
+0000400A                            21      
+0000400A                            22      
+0000400A  7002                      23         MOVE.L  #2,D0
+0000400C  4E4F                      24         TRAP    #15
+0000400E  5581                      25         SUBI.L  #2,D1                * SUBTRACTS 2 TO THE LENGTH OF CHARACTER INPUT B/C IT SHIFTS TWO CHAR
+00004010                            26                                      * CAUSING TWO CHARACTER TO BE SHEFTED OUT OR BECOMING OVERFLOW and
+00004010                            27                                      * ignoring last two digits wont affect our result  
+00004010                            28      
+00004010  21C9 5000                 29        MOVE.L     A1,USERINPUT           *SAVING USER INPUT ADDRESS
+00004014  21D1 5010                 30        MOVE.L    (A1),USERINPUTDATA      *SAVING USER INPUT DATA
+00004018                            31        
+00004018                            32        
+00004018  4282                      33        CLR.L    D2                       *CLEARING DATA REGISTERS D2,D3 FOR STORING 
+0000401A  4283                      34        CLR.L    D3
+0000401C                            35      
+0000401C  1419                      36  CHANGE  MOVE.B   (A1)+,D2               *LOOPING THROUGH USER INPUT TO CONVERT TO HEX VALUE
+0000401E  B23C 0000                 37          CMP.B    #0,D1
+00004022  6700 002A                 38          BEQ      DONE                   * WHEN WE FINISH CHANGING AND SAVE THE INPUT CHARACTER ON D3
+00004026  B43C 0040                 39          CMP.B    #$40,D2                * WE BRACH TO DONE TO PERFORM SPLITING OF SIGN,EXPONENT, MANTISSA
+0000402A  6C00 0006                 40          BGE      WORD_CHANGE            *BRANCH FOR A CHARACTER A-F
+0000402E  6D00 0010                 41          BLT      NUM_CHANGE             *BRANCH FOR A NUMBER 0-9
+00004032                            42          
+00004032                            43      
+00004032  0402 0037                 44  WORD_CHANGE SUB.B   #$37,D2             * CHARACTER CONVERTER BY SUBTRACTING 37 AND SAVING IT IN D2
+00004036                            45  
+00004036  E90A                      46             LSL.B   #4, D2               * LOGIC SHIFT LEFT TO CREATE A SPACE FOR POSITIONING INPUTS 
+00004038  1602                      47             MOVE.B  D2, D3               * MOVE IT TO D3 TO ACCUMULATE CHANGED INPUTS   
+0000403A  E98B                      48             LSL.L   #4, D3               * LOGIC SHIFT LEFT TO CREATE A SPACE FOR OTHER INPUTS
+0000403C  5301                      49             SUB.B   #1,D1                * SUBTACT 1 FROM THE NUMBER OF CHARACTERS INPUT 
+0000403E  60DC                      50             BRA     CHANGE               *TAKES BACK TO THE BEGINIGN TO REPEAT CHANGING CHAT BY CHAR
+00004040                            51              
+00004040  0402 0030                 52  NUM_CHANGE  SUB.B    #$30,D2            *CHANGES THE INPUT CHARACTER FOR NUMBER AND DO THE NECESSARY SHIFTING 
+00004044  E90A                      53              LSL.B   #4, D2
+00004046  1602                      54              MOVE.B  D2, D3
+00004048  E98B                      55              LSL.L   #4, D3
+0000404A  5301                      56              SUB.B   #1,D1
+0000404C  60CE                      57              BRA     CHANGE              *TAKES BACK TO THE BEGINIGN TO REPEAT CHANGING CHAT BY CHAR
+0000404E                            58              
+0000404E                            59  
+0000404E                            60                  
+0000404E                            61    
+0000404E  2203                      62  DONE MOVE.L   D3,D1                  * START CHANGING THE INPUT           
+00004050                            63      
+00004050  21C3 5020                 64      MOVE.L   D3,UERINPUTINHEX
+00004054                            65      
+00004054                            66      *CARRY-BIT
+00004054  43F9 00004106             67      LEA     SIGN,A1                  *DISPLAY THE SIGNBIT MESSAGE
+0000405A  103C 000E                 68      MOVE.B  #14,D0
+0000405E  4E4F                      69      TRAP    #15
+00004060                            70      
+00004060                            71      
+00004060  E389                      72      LSL.L   #1,D1
+00004062  6500 0012                 73      BCS     NEGATIVENUM             *BRANCH FOR NEGATIVE NUMBER 
+00004066  43F9 0000412E             74      LEA     POSNUM,A1               *DISPLAY POSITIVE SIGN
+0000406C  103C 000E                 75      MOVE.B  #14,D0
+00004070  4E4F                      76      TRAP    #15
+00004072  6000 000E                 77      BRA     EXPONENTNUM             *BRANCH FOR EXPONENT 
+00004076                            78      
+00004076  43F9 00004130             79  NEGATIVENUM   LEA     NEGNUM,A1     *DISPLAY NEGATIVE SIGN
+0000407C  103C 000E                 80                MOVE.B  #14,D0
+00004080  4E4F                      81                TRAP    #15
+00004082                            82  
+00004082  43F9 00004113             83  EXPONENTNUM   LEA     EXPONENT,A1   *DISPLAY THE EXPONENT MESSAGE
+00004088  103C 000E                 84                MOVE.B  #14,D0
+0000408C  4E4F                      85                TRAP    #15
+0000408E                            86                
+0000408E  E199                      87                ROL.L     #8,D1   *PERFORM SHIFTING FOR EXPONENT 
+00004090  2601                      88                MOVE.L    D1,D3
+00004092                            89                
+00004092  4281                      90                CLR.L     D1      
+00004094  1203                      91                MOVE.B    D3,D1
+00004096                            92                
+00004096  103C 0003                 93                MOVE.B    #3,D0
+0000409A  4E4F                      94                TRAP      #15   
+0000409C                            95                
+0000409C                            96  
+0000409C                            97           
+0000409C  43F9 00004121             98                LEA      MANTISSA,A1        *DISPLAY THE MANTISSA MESSAGE
+000040A2                            99  
+000040A2  103C 000E                100                MOVE.B   #14,D0
+000040A6  4E4F                     101                TRAP     #15
+000040A8                           102                
+000040A8  E08B                     103                LSR.L     #8,D3           *PERFORM SHIFTING FOR MANTISSA 
+000040AA  E28B                     104                LSR.L     #1,D3
+000040AC                           105                                          *PUSH THE ZEROS OUT              
+000040AC  0803 0000                106  PUSHZEROS    BTST      #$0,D3
+000040B0  6600 0006                107               BNE       CLEARED
+000040B4  E28B                     108               LSR.L     #1,D3
+000040B6  60F4                     109               BRA        PUSHZEROS
+000040B8                           110              
+000040B8                           111               
+000040B8                           112                
+000040B8  4281                     113  CLEARED      CLR.L     D1           
+000040BA  2203                     114               MOVE.L    D3,D1
+000040BC                           115               
+000040BC  103C 0003                116               MOVE.B    #3,D0        *DISPLAY MANTISSA VALUE 
+000040C0  4E4F                     117               TRAP      #15
+000040C2                           118     
+000040C2                           119  
+000040C2                           120       
+000040C2                           121      
+000040C2  FFFF FFFF                122      SIMHALT             ; halt simulator
+000040C6                           123  
+000040C6                           124  * Put variables and constants here
+000040C6  =0000000D                125  CR          EQU             $0D                   
+000040C6  =0000000A                126  LF          EQU             $0A                 
+000040C6                           127  
+000040C6= 50 6C 65 61 73 65 ...    128  MESSAGE     DC.B     'Please enter IEEE 32-bit floating point number in hexadecimal: ',0
+00004106= 0D 0A 53 69 67 6E ...    129  SIGN        DC.B     CR,LF,'Sign bit: ',0
+00004113= 0D 0A 45 58 50 4F ...    130  EXPONENT    DC.B     CR,LF,'EXPONENET: ',0
+00004121= 0D 0A 4D 41 4E 54 ...    131  MANTISSA     DC.B     CR,LF,'MANTISSA: ',0
+0000412E= 2B 00                    132  POSNUM      DC.B     '+',0
+00004130= 2D 00                    133  NEGNUM      DC.B     '-',0
+00004132                           134      END    START        ; last line of source
+
+No errors detected
+No warnings generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+CHANGE              401C
+CLEARED             40B8
+CR                  D
+DONE                404E
+EXPONENT            4113
+EXPONENTNUM         4082
+LF                  A
+MANTISSA            4121
+MESSAGE             40C6
+NEGATIVENUM         4076
+NEGNUM              4130
+NUM_CHANGE          4040
+POSNUM              412E
+PUSHZEROS           40AC
+SIGN                4106
+START               4000
+UERINPUTINHEX       5020
+USERINPUT           5000
+USERINPUTDATA       5010
+WORD_CHANGE         4032

@@ -1,0 +1,63 @@
+00001000 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.16.01
+Created On: 10/25/2020 2:31:44 PM
+
+00000000                             1  *-----------------------------------------------------------
+00000000                             2  * Title      :
+00000000                             3  * Written by :
+00000000                             4  * Date       :
+00000000                             5  * Description:
+00000000                             6  *-----------------------------------------------------------
+00000000                             7    
+00001000                             8       ORG    $1000
+00001000                             9  
+00001000                            10  START:                  ; first instruction of program
+00001000                            11  
+00001000                            12   
+00001000                            13  
+00001000                            14  * Put program code here
+00001000                            15  
+00001000  223C 00001234             16      MOVE.L #$1234,D1    ; load value 0x1234 into D1
+00001006                            17  
+00001006  43F9 00001024             18      LEA tempresult, A1  ; load the address of variable "tempresult" into A1
+0000100C                            19  
+0000100C  4284                      20      CLR.L D4        ; use D4 to count the total number of digits after conversion
+0000100E                            21  
+0000100E  1401                      22  CHANGETODECIMAL     MOVE.B  D1,D2
+00001010  E081                      23                      ASR.L   #8,D1
+00001012  C2FC 0003                 24                      mulu  #3,D1
+00001016                            25                      
+00001016                            26  
+00001016                            27  
+00001016                            28  
+00001016                            29  
+00001016                            30  
+00001016  43F9 0000102E             31      LEA base17value, A1 ; display the string stored at "base17value"
+0000101C                            32  
+0000101C  700D                      33      MOVE.L #13,D0       ; task number #13
+0000101E                            34  
+0000101E  4E4F                      35      TRAP #15            ; call TRAP #15 function
+00001020                            36  
+00001020  FFFF FFFF                 37      SIMHALT             ; halt simulator
+00001024                            38  
+00001024                            39   
+00001024                            40  
+00001024                            41  * Put variables and constants here
+00001024                            42  
+00001024                            43  tempresult DS.B 10      ; variable to save temporary result
+0000102E                            44  
+0000102E                            45  base17value DS.B 10     ; variable to save the final result
+00001038                            46  
+00001038                            47      END    START        ; last line of source
+
+No errors detected
+No warnings generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+BASE17VALUE         102E
+CHANGETODECIMAL     100E
+START               1000
+TEMPRESULT          1024

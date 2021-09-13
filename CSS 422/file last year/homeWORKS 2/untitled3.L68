@@ -1,0 +1,35 @@
+00004000 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.16.01
+Created On: 10/25/2020 7:37:47 PM
+
+00000000                             1  *-----------------------------------------------------------
+00000000                             2  * Title      :
+00000000                             3  * Written by :
+00000000                             4  * Date       :
+00000000                             5  * Description:
+00000000                             6  *-----------------------------------------------------------
+00000000                             7  
+00000000  =00004000                  8  data    equ $4000
+00000000                             9  
+00004000                            10      ORG    $4000
+00004000                            11  START:                  ; first instruction of program
+00004000                            12  
+00004000                            13  * Put program code here
+00004000  203C 000AB100             14      MOVE.L      #$AB100,D0
+00004006  3200                      15      MOVE.W      D0,D1
+00004008  FFFF FFFF                 16      SIMHALT             ; halt simulator
+0000400C                            17  
+0000400C                            18  * Put variables and constants here
+0000400C  2278 4000                 19      MOVE.L  data,A1
+00004010                            20      
+00004010                            21      END    START        ; last line of source
+
+No errors detected
+No warnings generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+DATA                4000
+START               4000

@@ -1,0 +1,82 @@
+00001000 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.16.01
+Created On: 10/17/2019 8:24:03 AM
+
+00000000                             1  *-----------------------------------------------------------
+00000000                             2  * Title      : Homework 1 Question #5
+00000000                             3  * Written by : Regie Pineda
+00000000                             4  * Date       : 10/13/2019
+00000000                             5  * Description: This program will get input from the user
+00000000                             6  *              and print out the sum.
+00000000                             7  *-----------------------------------------------------------
+00001000                             8  START:    ORG    $1000  ; first instruction of program
+00001000                             9  
+00001000                            10  * Progrom code starts here
+00001000                            11  *-------Code for input-------
+00001000                            12  
+00001000  43F9 00001054             13          LEA     PROMPTONE,A1     Prompts user for first input
+00001006  303C 000D                 14          MOVE.W  #13,D0       
+0000100A  4E4F                      15          TRAP    #15
+0000100C                            16  
+0000100C  303C 0004                 17          MOVE.W  #4,D0            Records user input
+00001010  4E4F                      18          TRAP    #15
+00001012                            19  
+00001012  3401                      20          MOVE.W  D1,D2            Pushes the D1 onto D2
+00001014                            21          
+00001014  43F9 0000106B             22          LEA     PROMPTTWO,A1     Prompts user for second input
+0000101A  303C 000D                 23          MOVE.W  #13,D0
+0000101E  4E4F                      24          TRAP    #15
+00001020                            25          
+00001020  303C 0004                 26          MOVE.W  #4,D0            Records user input
+00001024  4E4F                      27          TRAP    #15
+00001026                            28          
+00001026  B242                      29          CMP.W   D2,D1              Compares the values of D2,D1
+00001028  691E                      30          BVS.S   OVERFLOW           Checks 'V' for overflow
+0000102A  D242                      31          ADD.W   D2,D1              Adds the first value to the second value
+0000102C  691A                      32          BVS.S   OVERFLOW           Checks 'V' for overflow
+0000102E                            33  
+0000102E  31C1 6000                 34          MOVE.W  D1,$6000           Moves it to the memory address $6000
+00001032                            35          
+00001032  43F9 00001089             36          LEA     ALERT,A1           This will begin the pattern for alert  
+00001038  303C 000D                 37          MOVE.W  #13,D0             Prints out the message about the sum.      
+0000103C  4E4F                      38          TRAP    #15                Invokes the TRAP code
+0000103E                            39          
+0000103E  103C 0003                 40          MOVE.B  #3,D0              Show the result of the addition
+00001042  4E4F                      41          TRAP    #15                 
+00001044                            42           
+00001044  FFFF FFFF                 43          SIMHALT
+00001048                            44              
+00001048  43F9 000010A7             45  OVERFLOW    LEA     OVERFLOWMSG,A1     Alerts the user about the overflow
+0000104E  303C 000D                 46              MOVE.W  #13,D0
+00001052  4E4F                      47              TRAP    #15
+00001054                            48               
+00001054                            49  
+00001054                            50          
+00001054                            51  
+00001054                            52  * Put variables and constants here
+00001054                            53  
+00001054  =0000000D                 54  CR        EQU     $0D             ASCII code for Carriage Return
+00001054  =0000000A                 55  LF        EQU     $0A             ASCII code for Line Feed
+00001054= 50 6C 65 61 73 65 ...     56  PROMPTONE DC.B    'Please enter a number:',0
+0000106B= 50 6C 65 61 73 65 ...     57  PROMPTTWO DC.B    'Please enter a second number:',0
+00001089= 54 68 65 20 73 75 ...     58  ALERT     DC.B    'The sum of the two values is:',0
+000010A7                            59  *   Assumed no value output needed
+000010A7= 0D 0A 41 6E 20 6F ...     60  OVERFLOWMSG DC.B  CR,LF,'An overflow has occurred from the addition or subtraction.',0  
+000010E4                            61          
+000010E4                            62          END     START         Last line of the source code
+
+No errors detected
+No warnings generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+ALERT               1089
+CR                  D
+LF                  A
+OVERFLOW            1048
+OVERFLOWMSG         10A7
+PROMPTONE           1054
+PROMPTTWO           106B
+START               1000

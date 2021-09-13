@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>MyPizza Ordering</title>
+
+	<style>
+		body{
+			
+			/*background-color: #959A9C; color: #F8D948;*/
+			/*background-image: url("https://sandypines.com/wp-content/uploads/pizza.jpg");*/
+			
+			text-align: left;
+			background-color: #F8D948;
+		}
+		h1{
+			background-image: url("https://rayspizza.com/wp-content/uploads/2019/10/pizza-closeup.jpg") ;
+			width: all;
+			
+			height: 150px;
+			font-size: 4vw;
+			margin-top: 0px;
+			margin-bottom: 0px;
+		}
+
+		h3,h4{
+			margin-top: 1px;
+			margin-bottom: 3px;
+			color: #959A9C;
+		}
+
+		.pizzasize{
+			text-align: left;
+		}
+		.pic{
+			background-image: url("https://sandypines.com/wp-content/uploads/pizza.jpg") ;
+			widows: 10px;
+			height: 20vw;
+			color: white;
+			bottom: 0px;
+
+		}
+
+		.disp{
+			font-size: 20px;
+		}
+		.pageOne{
+		
+		}
+
+		.title{
+			color: red;
+		}
+
+
+
+		.button {
+   			background-color: #4CAF50; /* Green */
+ 			border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+}
+
+		p{
+			text-align: center;
+		}
+
+
+	</style>
+	<script type="text/javascript">
+
+
+		
+	function totalprice(){
+			
+			var radios = document.getElementsByName('crust');
+			var rad    = document.getElementsByName('Size');
+			var total=0;
+
+		
+		for (var i = 0, length = radios.length; i < length; i++) {
+		  if (radios[i].checked) {
+    // do whatever you want with the checked radio
+ 		  // alert(radios[i].value);
+ 		   var mycrust = parseInt(radios[i].value);
+   	 // only one radio can be logically checked, don't check the rest
+   		 	break;
+ 			 }
+		}
+
+		for (var j = 0, length = rad.length; j < length; j++) {
+		  if (rad[j].checked) {
+    // do whatever you want with the checked radio
+ 		  // alert(rad[j].value);
+ 		   var mySize = parseInt(rad[j].value);
+
+   	 // only one radio can be logically checked, don't check the rest
+   		 	break;
+   		   }
+ 		 }
+
+
+ 		if(mySize == 4 && mycrust == 1 ){
+ 			 	total+=10;
+ 		  }
+ 		  else if( mySize == 4 && mycrust == 2){
+ 		  	total+=12;
+ 		  }
+ 		  else if( mySize == 4 && mycrust == 3){
+ 		  	 total+=15;
+ 		  }
+ 		  else if( mySize == 5 && mycrust == 1){
+ 		  	 total+=15;
+ 		  }
+ 		  else if( mySize == 5 && mycrust == 2){
+ 		  	 total+=17;
+ 		  }
+ 		  else if( mySize == 5 && mycrust == 3){
+ 		  	 total+=20;
+ 		  }
+ 		  else if( mySize == 6 && mycrust == 1){
+ 		  	 total+=20;
+ 		  }
+ 		  else if( mySize == 6 && mycrust == 2){
+ 		  	 total+=22;
+ 		  }
+ 		  else if( mySize == 6 && mycrust == 3){	  	 
+ 		  	 total+=25;
+ 		  }else{
+ 		  	 window.alert('You have to Choose Both Crust and Pizza Size');
+ 		  }
+
+ 		  var count = getCheckboxCount();
+ 		  
+ 		  if(mySize == 4){
+ 		  	total += count*1;
+ 		  }
+ 		  else if(mySize == 5){
+ 		  	total += count*2;
+ 		  }
+ 		  else if(mySize == 6){
+ 		  	total += count*3;
+ 		  }
+		  document.getElementById('result').value = total; 	
+	}
+
+	function getCheckboxCount() {
+      return document.querySelectorAll('input[name=toppings]:checked').length;
+   }
+
+	function checkboxlimit(checkgroup, limit){
+	var checkgroup=checkgroup
+	var limit=limit
+	for (var i=0; i<checkgroup.length; i++){
+		checkgroup[i].onclick=function(){
+		var checkedcount=0
+		for (var i=0; i<checkgroup.length; i++)
+			checkedcount+=(checkgroup[i].checked)? 1 : 0
+		if (checkedcount>limit){
+			alert("FAT ASS! You can only choose "+limit+" toppings")
+			this.checked=false
+			}
+		}
+	}
+}
+	</script>
+</head>
+
+
+<body>
+<h1 class="title" align="center"> Create your own Pizza!!!! </h1>
+
+<div class="pageOne">
+<h4>Choose Crust :</h4>
+<input type="radio" id="THIN" 	 name="crust" value="1">THIN <br>
+<input type="radio" id="REGULAR" name="crust" value="2">REGULAR<br>
+<input type="radio" id="DEEP" 	 name="crust" value="3">DEEP DISH<br>
+
+<h4>Choose Pizza Size :</h4>
+<input type="radio" id="Small"  name="Size" value="4"> Small <br>
+<input type="radio" id="Medium" name="Size" value="5"> Medium <br>
+<input type="radio" id="Large"  name="Size" value="6"> Large <br>
+
+<h4>Choose Sauce :</h4>
+<input type="radio" id="Red"   name="Sauce" value="7">Red<br>
+<input type="radio" id="white" name="Sauce" value="7">White<br>
+<input type="radio" id="green" name="Sauce" value="7">Green<br>
+
+<h4>Mozzarela Cheese :</h4>
+<input type="radio" id="Red"   name="Mozzarela" value="9" checked="checked">Mozzarela Cheese<br>
+
+<h4>Choose toppings :(MAX 3)</h4>
+<form id="toppings">
+<input type="checkbox" id="toppings" name="toppings" value="8">pepperoni<br>
+<input type="checkbox" id="toppings" name="toppings" value="8">sausage<br>
+<input type="checkbox" id="toppings" name="toppings" value="8">garlic<br>
+<input type="checkbox" id="toppings" name="toppings" value="8">green pepper<br>
+<input type="checkbox" id="toppings" name="toppings" value="8">mushrooms<br>
+<input type="checkbox" id="toppings" name="toppings" value="8">black olives<br>
+</form>
+</div>
+<script type="text/javascript">
+
+//Syntax: checkboxlimit(checkbox_reference, limit)
+checkboxlimit(document.forms.toppings.toppings, 3);
+
+</script>
+
+<p class="disp" align="center">Price of this Pizza is only: $<input type="text" id="result" size="30" /></p>
+
+<fieldset class="pic">
+	<input class="button" type="button" value="Submit now" onclick="totalprice()" size="50"> <br>
+
+	<p>&copy; 2021-end day: All rights served for class CSSE 481 <br >University Of Washington</p>
+</fieldset>
+
+</body>
+</html>

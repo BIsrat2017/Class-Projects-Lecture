@@ -1,0 +1,101 @@
+00000400 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.16.01
+Created On: 10/17/2019 8:21:56 AM
+
+00000000                             1  *-----------------------------------------------------------
+00000000                             2  * Title      : Homework 1 Question #4
+00000000                             3  * Written by : Dr. Ahmed Awad analyzed by Regie Pineda
+00000000                             4  * Date       : 10/12/2019
+00000000                             5  * Description: Testing for value in $4000
+00000000                             6  *-----------------------------------------------------------
+00000000                             7   *=======================================================================================
+00000000                             8  
+00000000                             9  * Watch out for comments, if the text spills over to the next line and you forget to use an asterisk, you'll get an error.
+00000000                            10  
+00000000                            11  ********************************************************************************************************
+00000000                            12  
+00000000                            13  *
+00000000                            14  
+00000000                            15  *  Beginning of EQUates section, just like #define in C
+00000000                            16  
+00000000                            17  *
+00000000                            18  
+00000000                            19  ********************************************************************************************************
+00000000                            20  
+00000000  =00004000                 21  addr1     EQU     $4000        
+00000000                            22  
+00000000  =00004001                 23  addr2     EQU     $4001 
+00000000                            24  
+00000000  =0000A7FF                 25  data2     EQU     $A7FF 
+00000000                            26  
+00000000  =00005555                 27  data3     EQU     $5555 
+00000000                            28  
+00000000  =00000000                 29  data4     EQU     $0000 
+00000000                            30  
+00000000  =00001246                 31  data5     EQU     4678 
+00000000                            32  
+00000000  =0000004F                 33  data6     EQU     %01001111 
+00000000                            34  
+00000000  =00000017                 35  data7     EQU     %00010111 
+00000000                            36  
+00000000                            37   
+00000000                            38  
+00000000                            39  ********************************************************************************************************
+00000000                            40  
+00000000                            41  * Beginning of code segment. This is the actual assembly language instructions.
+00000000                            42  
+00000000                            43  
+00000000                            44  ********************************************************************************************************
+00000000                            45  
+00000000                            46   
+00000000                            47  
+00000400                            48      ORG       $400          * This pseudo op code tells the assembler  here                                                                                                                         
+00000400                            49  
+00000400                            50                                   * the program will run in memory
+00000400                            51  
+00000400  303C A7FF                 52  start  MOVE.W    #data2,D0     * Load D0 
+00000404                            53  
+00000404  123C 004F                 54           MOVE.B    #data6,D1     * Load D1 
+00000408                            55  
+00000408  143C 0017                 56           MOVE.B    #data7,D2     * load D2 
+0000040C                            57  
+0000040C  363C 5555                 58           MOVE.W    #data3,D3     * load D3 
+00000410                            59  
+00000410  307C 4000                 60           MOVEA.W   #addr1,A0     * load address register 
+00000414                            61  
+00000414  10C1                      62           MOVE.B    D1,(A0)+      * transfer byte to memory 
+00000416                            63  
+00000416  10C2                      64           MOVE.B    D2,(A0)+      * transfer second byte
+00000418                            65  
+00000418  327C 4000                 66           MOVEA.W   #addr1,A1     * load address 
+0000041C                            67  
+0000041C  C751                      68           AND.W     D3,(A1)       * Logical AND
+0000041E                            69  
+0000041E                            70   
+0000041E                            71  
+0000041E                            72  * The next instruction shows how a label is used
+0000041E                            73  
+0000041E                            74   
+0000041E                            75  
+0000041E  4EF8 0400                 76          JMP        start        * This instruction keeps the program
+00000422                            77  
+00000422                            78                                        * looping forever
+00000422                            79  
+00000422                            80          END   $400           * This pseudo op-code tells the assembler 
+
+No errors detected
+No warnings generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+ADDR1               4000
+ADDR2               4001
+DATA2               A7FF
+DATA3               5555
+DATA4               0
+DATA5               1246
+DATA6               4F
+DATA7               17
+START               400

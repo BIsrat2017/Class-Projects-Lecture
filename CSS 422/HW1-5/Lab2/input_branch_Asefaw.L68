@@ -1,0 +1,130 @@
+00001000 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.16.01
+Created On: 10/14/2020 9:22:10 PM
+
+00000000                             1  *-----------------------------------------------------------
+00000000                             2  * Title      : CSS 422 
+00000000                             3  * Written by : BISRAT ASEAW
+00000000                             4  * Date       : OCT. 9,2021
+00000000                             5  * Description: LAB1
+00000000                             6  *-----------------------------------------------------------
+00000000  =0000000D                  7  CR  EQU     $0D
+00000000  =0000000A                  8  LF  EQU     $0A
+00000000                             9  
+00000000                            10      
+00001000                            11  START:      ORG    $1000        ; first instruction of program
+00001000                            12  
+00001000                            13  * Put program code here
+00001000                            14  
+00001000                            15  *------- CODE FOR OUTPUT ----
+00001000  43F9 000010D6             16  LOOP       LEA     MESSAGE,A1
+00001006  103C 000E                 17             MOVE.B  #14,D0
+0000100A  4E4F                      18             TRAP    #15
+0000100C                            19          
+0000100C                            20  *-------- CODE FOR INPUT ---
+0000100C  103C 0004                 21             MOVE.B  #4,D0
+00001010  4E4F                      22             TRAP    #15
+00001012  B2BC 001E194A             23             CMP.L   #1972554,D1
+00001018  6700 00B6                 24             BEQ     DONE
+0000101C                            25          
+0000101C  B2BC 00000014             26             CMP.L   #20,D1
+00001022  6D00 009C                 27             BLT     INVALID
+00001026  B2BC 00000019             28             CMP.L   #25,D1
+0000102C  6E00 0092                 29             BGT     INVALID 
+00001030                            30             
+00001030                            31  *-------- CODE FOR FIGURING OUT THE NUMBER ---  
+00001030  B2BC 00000014             32             CMP.L    #20,D1
+00001036  6600 0010                 33             BNE      TWENTYONE
+0000103A  43F9 00001122             34             LEA      DISP20,A1
+00001040  103C 000E                 35             MOVE.B   #14,D0
+00001044  4E4F                      36             TRAP     #15
+00001046  60B8                      37             BRA      LOOP
+00001048                            38  
+00001048  B2BC 00000015             39  TWENTYONE  CMP.L    #21,D1
+0000104E  6600 0010                 40             BNE      TWENTYTWO
+00001052  43F9 00001143             41             LEA      DISP21,A1
+00001058  103C 000E                 42             MOVE.B   #14,D0
+0000105C  4E4F                      43             TRAP     #15
+0000105E  60A0                      44             BRA      LOOP
+00001060                            45             
+00001060  B2BC 00000016             46  TWENTYTWO  CMP.L    #22,D1
+00001066  6600 0010                 47             BNE      TWENTYTHREE
+0000106A  43F9 00001160             48             LEA      DISP22,A1
+00001070  103C 000E                 49             MOVE.B   #14,D0
+00001074  4E4F                      50             TRAP     #15
+00001076  6088                      51             BRA      LOOP
+00001078                            52             
+00001078  B2BC 00000017             53  TWENTYTHREE CMP.L    #23,D1
+0000107E  6600 0012                 54              BNE      TWENTYFOUR
+00001082  43F9 00001184             55              LEA      DISP23,A1
+00001088  103C 000E                 56              MOVE.B   #14,D0
+0000108C  4E4F                      57              TRAP     #15
+0000108E  6000 FF70                 58              BRA      LOOP
+00001092                            59  
+00001092  B2BC 00000018             60  TWENTYFOUR  CMP.L    #24,D1
+00001098  6600 0012                 61             BNE      TWENTYFIVE
+0000109C  43F9 000011A3             62             LEA      DISP24,A1
+000010A2  103C 000E                 63             MOVE.B   #14,D0
+000010A6  4E4F                      64             TRAP     #15
+000010A8  6000 FF56                 65             BRA      LOOP 
+000010AC                            66                    
+000010AC  43F9 000011C7             67  TWENTYFIVE LEA      DISP25,A1
+000010B2  103C 000E                 68             MOVE.B   #14,D0
+000010B6  4E4F                      69             TRAP     #15
+000010B8  6000 FF46                 70             BRA      LOOP
+000010BC                            71             
+000010BC  6000 FF42                 72             BRA     LOOP    
+000010C0                            73   
+000010C0  43F9 000010FE             74  INVALID      LEA     INV,A1
+000010C6  103C 000E                 75               MOVE.B  #14,D0
+000010CA  4E4F                      76               TRAP    #15
+000010CC                            77  
+000010CC                            78  
+000010CC  6000 FF32                 79               BRA     LOOP 
+000010D0                            80  
+000010D0  103C 0009                 81  DONE    MOVE.B  #9,D0
+000010D4  4E4F                      82          TRAP    #15
+000010D6                            83   
+000010D6= 45 6E 74 65 72 20 ...     84  MESSAGE DC.B    'Enter a number, Enter 1972554 to exit: ',0
+000010FE= 57 41 52 4E 49 4E ...     85  INV     DC.B    'WARNING!!!, NOT BETWEEN 20 AND 25',CR,LF,0
+00001122= 43 6F 72 72 65 63 ...     86  DISP20  DC.B    'Correct 3.5!! I GOT 20  VALID ',CR,LF,0
+00001143= 4E 69 63 65 20 33 ...     87  DISP21  DC.B    'Nice 3.6!! I GOT 21  VALID',CR,LF,0
+00001160= 47 72 65 61 74 20 ...     88  DISP22  DC.B    'Great 3.8!! Pass, I GOT 22  VALID',CR,LF,0
+00001184= 53 77 65 65 20 33 ...     89  DISP23  DC.B    'Swee 3.9t!!, I GOT 23  VALID',CR,LF,0
+000011A3= 59 6F 75 20 47 6F ...     90  DISP24  DC.B    'You Got It 3.9!!, I GOT 24  VALID',CR,LF,0
+000011C7= 45 78 63 65 6C 6C ...     91  DISP25  DC.B    'Excellent 4.0!!, I GOT 25  VALID',CR,LF,0
+000011EA                            92      
+000011EA                            93  
+000011EA                            94  
+000011EA  FFFF FFFF                 95      SIMHALT             ; halt simulator
+000011EE                            96  
+000011EE                            97  * Put variables and constants here
+000011EE                            98  
+000011EE                            99      END    START        ; last line of source
+
+No errors detected
+No warnings generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+CR                  D
+DISP20              1122
+DISP21              1143
+DISP22              1160
+DISP23              1184
+DISP24              11A3
+DISP25              11C7
+DONE                10D0
+INV                 10FE
+INVALID             10C0
+LF                  A
+LOOP                1000
+MESSAGE             10D6
+START               1000
+TWENTYFIVE          10AC
+TWENTYFOUR          1092
+TWENTYONE           1048
+TWENTYTHREE         1078
+TWENTYTWO           1060
